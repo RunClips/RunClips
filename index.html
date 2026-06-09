@@ -1,0 +1,988 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RunClips — No Pins. No Holes. No Magnets.</title>
+<meta name="description" content="RunClips are fully customizable bib clips for race events. No safety pins, no holes in gear. Custom branded for your event or sponsor.">
+<meta property="og:title" content="RunClips — Custom Bib Clips for Race Events">
+<meta property="og:description" content="Replace safety pins with fully branded, reusable bib clips. Custom made for race organizers across Canada.">
+
+<style>
+  /* ─── TOKENS ─────────────────────────────────────────── */
+  :root {
+    --ink:       #0D0E12;
+    --ink-soft:  #1C1E26;
+    --white:     #FFFFFF;
+    --white-dim: rgba(255,255,255,0.70);
+    --white-faint: rgba(255,255,255,0.10);
+    --cyan:      #00C2E0;
+    --cyan-dim:  rgba(0,194,224,0.15);
+    --gold:      #F5A623;
+    --gold-dim:  rgba(245,166,35,0.15);
+    --rule:      rgba(255,255,255,0.10);
+    --radius:    6px;
+    --max:       1080px;
+  }
+
+  /* ─── RESET ──────────────────────────────────────────── */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: 'Inter', 'Helvetica Neue', Arial, sans-serif;
+    background: var(--ink);
+    color: var(--white);
+    line-height: 1.6;
+    overflow-x: hidden;
+  }
+  img { display: block; max-width: 100%; }
+  a { color: inherit; text-decoration: none; }
+
+  /* ─── LANGUAGE TOGGLE ────────────────────────────────── */
+  .lang-bar {
+    position: fixed; top: 0; left: 0; right: 0;
+    z-index: 100;
+    display: flex; justify-content: flex-end; align-items: center;
+    padding: 12px 24px;
+    background: rgba(13,14,18,0.92);
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid var(--rule);
+  }
+  .lang-logo {
+    position: absolute; left: 24px;
+    font-size: 1.1rem; font-weight: 800; letter-spacing: -0.02em;
+    color: var(--white);
+  }
+  .lang-logo span { color: var(--cyan); }
+  .lang-toggle {
+    display: flex; gap: 4px;
+    background: var(--white-faint);
+    border-radius: 20px;
+    padding: 3px;
+  }
+  .lang-btn {
+    padding: 4px 14px;
+    border-radius: 16px;
+    font-size: 0.78rem; font-weight: 700; letter-spacing: 0.06em;
+    cursor: pointer; border: none;
+    background: transparent; color: var(--white-dim);
+    transition: all 0.2s;
+  }
+  .lang-btn.active {
+    background: var(--cyan); color: var(--ink);
+  }
+
+  /* ─── HERO ───────────────────────────────────────────── */
+  .hero {
+    min-height: 100vh;
+    display: flex; flex-direction: column;
+    justify-content: center; align-items: flex-start;
+    padding: 120px 24px 80px;
+    position: relative; overflow: hidden;
+    background: var(--ink);
+  }
+  .hero-bg-word {
+    position: absolute;
+    right: -2%;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: clamp(160px, 22vw, 320px);
+    font-weight: 900;
+    letter-spacing: -0.05em;
+    color: transparent;
+    -webkit-text-stroke: 1px rgba(0,194,224,0.12);
+    line-height: 1;
+    pointer-events: none;
+    user-select: none;
+  }
+  .hero-inner {
+    position: relative; z-index: 2;
+    max-width: var(--max); width: 100%; margin: 0 auto;
+  }
+  .hero-eyebrow {
+    display: inline-block;
+    font-size: 0.75rem; font-weight: 700; letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--cyan);
+    margin-bottom: 20px;
+    border: 1px solid rgba(0,194,224,0.3);
+    padding: 4px 12px; border-radius: 20px;
+  }
+  .hero h1 {
+    font-size: clamp(2.6rem, 7vw, 6rem);
+    font-weight: 900;
+    line-height: 1.0;
+    letter-spacing: -0.03em;
+    margin-bottom: 28px;
+    max-width: 680px;
+  }
+  .hero h1 em {
+    font-style: normal;
+    color: var(--cyan);
+  }
+  .hero-sub {
+    font-size: clamp(1rem, 2vw, 1.2rem);
+    color: var(--white-dim);
+    max-width: 520px;
+    margin-bottom: 40px;
+    line-height: 1.7;
+  }
+  .hero-fr { display: none; }
+
+  .cta-group { display: flex; gap: 14px; flex-wrap: wrap; }
+  .btn-primary {
+    display: inline-block;
+    padding: 16px 36px;
+    background: var(--cyan);
+    color: var(--ink);
+    font-weight: 800; font-size: 0.95rem; letter-spacing: 0.04em;
+    border-radius: var(--radius);
+    transition: transform 0.15s, box-shadow 0.15s;
+    border: none; cursor: pointer;
+  }
+  .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(0,194,224,0.35);
+  }
+  .btn-secondary {
+    display: inline-block;
+    padding: 16px 36px;
+    background: transparent;
+    color: var(--white);
+    font-weight: 700; font-size: 0.95rem; letter-spacing: 0.04em;
+    border-radius: var(--radius);
+    border: 1px solid var(--rule);
+    transition: border-color 0.2s, color 0.2s;
+    cursor: pointer;
+  }
+  .btn-secondary:hover { border-color: var(--cyan); color: var(--cyan); }
+
+  .hero-proof {
+    margin-top: 56px;
+    display: flex; gap: 40px; flex-wrap: wrap;
+    border-top: 1px solid var(--rule);
+    padding-top: 32px;
+  }
+  .proof-stat { }
+  .proof-number {
+    font-size: 2.2rem; font-weight: 900; letter-spacing: -0.03em;
+    color: var(--white); line-height: 1;
+  }
+  .proof-number span { color: var(--cyan); }
+  .proof-label {
+    font-size: 0.8rem; color: var(--white-dim); margin-top: 4px;
+    letter-spacing: 0.02em;
+  }
+
+  /* ─── SECTION WRAPPER ────────────────────────────────── */
+  .section {
+    padding: 96px 24px;
+    max-width: var(--max);
+    margin: 0 auto;
+  }
+  .section-full {
+    padding: 96px 24px;
+    background: var(--ink-soft);
+  }
+  .section-full-inner {
+    max-width: var(--max);
+    margin: 0 auto;
+  }
+  .section-label {
+    font-size: 0.72rem; font-weight: 700; letter-spacing: 0.14em;
+    text-transform: uppercase; color: var(--cyan);
+    margin-bottom: 16px;
+  }
+  .section-title {
+    font-size: clamp(1.8rem, 4vw, 2.8rem);
+    font-weight: 800; letter-spacing: -0.02em; line-height: 1.15;
+    margin-bottom: 16px;
+  }
+  .section-sub {
+    font-size: 1.05rem; color: var(--white-dim);
+    max-width: 540px; line-height: 1.7;
+    margin-bottom: 56px;
+  }
+
+  /* ─── THE PROBLEM ────────────────────────────────────── */
+  .problem-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 2px;
+  }
+  .problem-card {
+    background: var(--white-faint);
+    padding: 32px 28px;
+    border-radius: var(--radius);
+  }
+  .problem-icon {
+    font-size: 2rem; margin-bottom: 16px;
+  }
+  .problem-card h3 {
+    font-size: 1rem; font-weight: 700; margin-bottom: 8px;
+  }
+  .problem-card p {
+    font-size: 0.9rem; color: var(--white-dim); line-height: 1.6;
+  }
+
+  /* ─── HOW IT WORKS ───────────────────────────────────── */
+  .steps {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 32px;
+    counter-reset: steps;
+  }
+  .step {
+    position: relative;
+    padding: 32px 24px 32px 24px;
+    border: 1px solid var(--rule);
+    border-radius: var(--radius);
+    counter-increment: steps;
+  }
+  .step::before {
+    content: counter(steps, decimal-leading-zero);
+    display: block;
+    font-size: 0.72rem; font-weight: 800; letter-spacing: 0.1em;
+    color: var(--cyan); margin-bottom: 16px;
+  }
+  .step h3 {
+    font-size: 1rem; font-weight: 700; margin-bottom: 8px;
+  }
+  .step p {
+    font-size: 0.88rem; color: var(--white-dim); line-height: 1.6;
+  }
+
+  /* ─── PRODUCT VISUAL ─────────────────────────────────── */
+  .product-split {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 64px;
+    align-items: center;
+  }
+  @media (max-width: 700px) {
+    .product-split { grid-template-columns: 1fr; gap: 40px; }
+  }
+  .product-img-wrap {
+    position: relative;
+    border-radius: 12px;
+    overflow: hidden;
+    background: var(--white-faint);
+    aspect-ratio: 1 / 1;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .product-img-wrap img {
+    width: 100%; height: 100%; object-fit: cover;
+  }
+  .product-badge {
+    position: absolute; bottom: 16px; left: 16px;
+    background: var(--cyan);
+    color: var(--ink);
+    font-size: 0.75rem; font-weight: 800; letter-spacing: 0.08em;
+    padding: 6px 14px; border-radius: 20px;
+    text-transform: uppercase;
+  }
+  .product-features { list-style: none; }
+  .product-features li {
+    padding: 16px 0;
+    border-bottom: 1px solid var(--rule);
+    display: flex; gap: 14px; align-items: flex-start;
+    font-size: 0.95rem;
+  }
+  .product-features li:last-child { border-bottom: none; }
+  .feat-icon { color: var(--cyan); font-size: 1.1rem; flex-shrink: 0; margin-top: 1px; }
+  .feat-text strong { display: block; font-weight: 700; margin-bottom: 3px; }
+  .feat-text span { color: var(--white-dim); font-size: 0.87rem; }
+
+  /* ─── PROOF / TESTIMONIAL ────────────────────────────── */
+  .proof-section {
+    background: linear-gradient(135deg, rgba(0,194,224,0.08) 0%, rgba(245,166,35,0.05) 100%);
+    border: 1px solid rgba(0,194,224,0.15);
+    border-radius: 12px;
+    padding: 56px 48px;
+    position: relative;
+    overflow: hidden;
+  }
+  .proof-section::before {
+    content: '"';
+    position: absolute; top: -20px; left: 32px;
+    font-size: 180px; line-height: 1;
+    color: rgba(0,194,224,0.06);
+    font-weight: 900;
+    pointer-events: none;
+  }
+  .proof-quote {
+    font-size: clamp(1.1rem, 2.2vw, 1.5rem);
+    font-weight: 600; line-height: 1.5;
+    margin-bottom: 28px;
+    position: relative; z-index: 1;
+    max-width: 680px;
+  }
+  .proof-quote em { font-style: normal; color: var(--cyan); }
+  .proof-attribution {
+    display: flex; align-items: center; gap: 16px;
+  }
+  .proof-avatar {
+    width: 48px; height: 48px; border-radius: 50%;
+    background: var(--gold-dim);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.3rem;
+    border: 2px solid var(--gold);
+  }
+  .proof-name { font-weight: 700; font-size: 0.95rem; }
+  .proof-detail { font-size: 0.82rem; color: var(--white-dim); margin-top: 2px; }
+  .proof-tag {
+    margin-left: auto;
+    background: var(--gold-dim);
+    border: 1px solid rgba(245,166,35,0.3);
+    color: var(--gold);
+    font-size: 0.75rem; font-weight: 800; letter-spacing: 0.08em;
+    padding: 6px 14px; border-radius: 20px;
+    text-transform: uppercase;
+  }
+
+  /* ─── CUSTOMIZATION ──────────────────────────────────── */
+  .custom-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 16px;
+    margin-bottom: 48px;
+  }
+  .custom-card {
+    background: var(--white-faint);
+    border: 1px solid var(--rule);
+    border-radius: var(--radius);
+    padding: 24px 20px;
+    text-align: center;
+    transition: border-color 0.2s, transform 0.2s;
+  }
+  .custom-card:hover { border-color: var(--cyan); transform: translateY(-3px); }
+  .custom-card-icon { font-size: 2rem; margin-bottom: 12px; }
+  .custom-card h3 { font-size: 0.9rem; font-weight: 700; margin-bottom: 6px; }
+  .custom-card p { font-size: 0.82rem; color: var(--white-dim); line-height: 1.5; }
+
+  /* ─── PRICING ────────────────────────────────────────── */
+  .pricing-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.92rem;
+  }
+  .pricing-table thead tr {
+    background: var(--cyan-dim);
+    border-bottom: 1px solid rgba(0,194,224,0.3);
+  }
+  .pricing-table th {
+    padding: 14px 20px;
+    font-size: 0.75rem; font-weight: 800; letter-spacing: 0.1em;
+    text-transform: uppercase; color: var(--cyan);
+    text-align: left;
+  }
+  .pricing-table td {
+    padding: 14px 20px;
+    border-bottom: 1px solid var(--rule);
+    color: var(--white-dim);
+  }
+  .pricing-table td:first-child { color: var(--white); font-weight: 600; }
+  .pricing-table tr:last-child td { border-bottom: none; }
+  .pricing-table tr:hover td { background: var(--white-faint); }
+  .price-note {
+    margin-top: 20px;
+    font-size: 0.82rem; color: var(--white-dim);
+    padding: 16px 20px;
+    border: 1px dashed var(--rule);
+    border-radius: var(--radius);
+    line-height: 1.6;
+  }
+
+  /* ─── CONTACT / QUOTE FORM ───────────────────────────── */
+  .form-wrap {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 48px;
+    align-items: start;
+  }
+  @media (max-width: 700px) {
+    .form-wrap { grid-template-columns: 1fr; }
+  }
+  .form-info h2 {
+    font-size: clamp(1.8rem, 3.5vw, 2.4rem);
+    font-weight: 800; letter-spacing: -0.02em; line-height: 1.2;
+    margin-bottom: 20px;
+  }
+  .form-info h2 em { font-style: normal; color: var(--cyan); }
+  .form-info p {
+    font-size: 0.95rem; color: var(--white-dim); line-height: 1.7;
+    margin-bottom: 32px;
+  }
+  .contact-links { display: flex; flex-direction: column; gap: 12px; }
+  .contact-link {
+    display: flex; align-items: center; gap: 12px;
+    font-size: 0.9rem; color: var(--white-dim);
+    transition: color 0.2s;
+  }
+  .contact-link:hover { color: var(--cyan); }
+  .contact-link-icon { font-size: 1.1rem; width: 20px; text-align: center; }
+
+  .form-fields { }
+  .field { margin-bottom: 20px; }
+  .field label {
+    display: block;
+    font-size: 0.78rem; font-weight: 700; letter-spacing: 0.08em;
+    text-transform: uppercase; color: var(--white-dim);
+    margin-bottom: 8px;
+  }
+  .field input,
+  .field select,
+  .field textarea {
+    width: 100%;
+    background: var(--white-faint);
+    border: 1px solid var(--rule);
+    border-radius: var(--radius);
+    padding: 14px 16px;
+    color: var(--white);
+    font-size: 0.95rem;
+    font-family: inherit;
+    transition: border-color 0.2s, background 0.2s;
+    outline: none;
+    appearance: none;
+  }
+  .field input::placeholder,
+  .field textarea::placeholder { color: rgba(255,255,255,0.25); }
+  .field input:focus,
+  .field select:focus,
+  .field textarea:focus {
+    border-color: var(--cyan);
+    background: rgba(0,194,224,0.05);
+  }
+  .field select option { background: #1C1E26; color: white; }
+  .field textarea { resize: vertical; min-height: 100px; }
+  .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  @media (max-width: 500px) { .field-row { grid-template-columns: 1fr; } }
+
+  .form-submit {
+    width: 100%;
+    padding: 16px;
+    background: var(--cyan); color: var(--ink);
+    font-size: 0.95rem; font-weight: 800; letter-spacing: 0.04em;
+    border: none; border-radius: var(--radius);
+    cursor: pointer;
+    transition: transform 0.15s, box-shadow 0.15s;
+  }
+  .form-submit:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(0,194,224,0.35);
+  }
+  .form-success {
+    display: none;
+    background: rgba(0,194,224,0.1);
+    border: 1px solid rgba(0,194,224,0.3);
+    border-radius: var(--radius);
+    padding: 20px 24px;
+    color: var(--cyan);
+    font-weight: 600;
+    margin-top: 16px;
+    text-align: center;
+  }
+
+  /* ─── FOOTER ─────────────────────────────────────────── */
+  footer {
+    border-top: 1px solid var(--rule);
+    padding: 40px 24px;
+    text-align: center;
+  }
+  .footer-inner {
+    max-width: var(--max); margin: 0 auto;
+    display: flex; justify-content: space-between; align-items: center;
+    flex-wrap: wrap; gap: 16px;
+  }
+  .footer-brand {
+    font-size: 1rem; font-weight: 800; letter-spacing: -0.01em;
+  }
+  .footer-brand span { color: var(--cyan); }
+  .footer-links {
+    display: flex; gap: 24px;
+    font-size: 0.82rem; color: var(--white-dim);
+  }
+  .footer-links a:hover { color: var(--cyan); }
+  .footer-copy {
+    font-size: 0.78rem; color: rgba(255,255,255,0.3);
+    width: 100%; text-align: center; margin-top: 8px;
+  }
+
+  /* ─── DIVIDER ────────────────────────────────────────── */
+  .divider {
+    height: 1px; background: var(--rule);
+    max-width: var(--max); margin: 0 auto;
+  }
+
+  /* ─── RESPONSIVE ─────────────────────────────────────── */
+  @media (max-width: 768px) {
+    .hero { padding: 100px 20px 60px; }
+    .section { padding: 64px 20px; }
+    .section-full { padding: 64px 20px; }
+    .proof-section { padding: 40px 28px; }
+    .proof-tag { display: none; }
+    .hero-bg-word { display: none; }
+  }
+
+  /* ─── FRENCH LANGUAGE TOGGLE ─────────────────────────── */
+  body.fr .en { display: none !important; }
+  body.fr .fr { display: block !important; }
+  body.en .fr { display: none !important; }
+  body.en .en { display: block !important; }
+
+  /* inline fr/en spans */
+  .fr-inline { display: none; }
+  body.fr .en-inline { display: none !important; }
+  body.fr .fr-inline { display: inline !important; }
+
+  /* ─── SCROLL ANIMATIONS ──────────────────────────────── */
+  .reveal {
+    opacity: 0; transform: translateY(24px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+  }
+  .reveal.visible { opacity: 1; transform: none; }
+  @media (prefers-reduced-motion: reduce) {
+    .reveal { opacity: 1; transform: none; transition: none; }
+  }
+</style>
+</head>
+
+<body class="en">
+
+<!-- ─── NAV / LANG BAR ──────────────────────────────────── -->
+<nav class="lang-bar">
+  <div class="lang-logo">Run<span>Clips</span> <span style="font-weight:400;font-size:0.75rem;color:rgba(255,255,255,0.4);letter-spacing:0.02em;">by RunMaps</span></div>
+  <div class="lang-toggle">
+    <button class="lang-btn active" id="btn-en" onclick="setLang('en')">EN</button>
+    <button class="lang-btn" id="btn-fr" onclick="setLang('fr')">FR</button>
+  </div>
+</nav>
+
+<!-- ─── HERO ────────────────────────────────────────────── -->
+<section class="hero">
+  <div class="hero-bg-word">RUN</div>
+  <div class="hero-inner">
+
+    <div class="hero-eyebrow en">Custom Bib Clips — Made in Canada</div>
+    <div class="hero-eyebrow fr" style="display:none">Pinces à dossard personnalisées — Fabriquées au Canada</div>
+
+    <h1 class="en">No Pins.<br>No Holes.<br><em>No Magnets.</em></h1>
+    <h1 class="fr" style="display:none">Fini les trous<br>dans les<br><em>chandails.</em></h1>
+
+    <p class="hero-sub en">
+      RunClips replace safety pins with a clean, durable, fully custom-branded bib clip — built for race organizers who want to upgrade their participant experience and put their brand on the start line.
+    </p>
+    <p class="hero-sub fr" style="display:none">
+      Les RunClips remplacent les épingles de sûreté par une pince à dossard propre, durable et entièrement personnalisée — conçue pour les organisateurs qui veulent améliorer l'expérience de leurs coureurs et afficher leur marque dès la ligne de départ.
+    </p>
+
+    <div class="cta-group">
+      <a href="#quote" class="btn-primary en">Get a Custom Quote</a>
+      <a href="#quote" class="btn-primary fr" style="display:none">Obtenir une soumission</a>
+      <a href="#how" class="btn-secondary en">See How It Works</a>
+      <a href="#how" class="btn-secondary fr" style="display:none">Comment ça fonctionne</a>
+    </div>
+
+    <div class="hero-proof">
+      <div class="proof-stat">
+        <div class="proof-number">100<span>mi</span></div>
+        <div class="proof-label en">Proven in the field — Cruel Jewel Ultra</div>
+        <div class="proof-label fr" style="display:none">Testé sur le terrain — Cruel Jewel Ultra</div>
+      </div>
+      <div class="proof-stat">
+        <div class="proof-number">0<span>×</span></div>
+        <div class="proof-label en">Times a clip has failed in testing</div>
+        <div class="proof-label fr" style="display:none">Défaillance lors des tests</div>
+      </div>
+      <div class="proof-stat">
+        <div class="proof-number">∞</div>
+        <div class="proof-label en">Custom designs — your logo, your brand</div>
+        <div class="proof-label fr" style="display:none">Designs personnalisés — votre logo, votre marque</div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ─── THE PROBLEM ─────────────────────────────────────── -->
+<section class="section reveal" id="problem">
+  <div class="section-label en">The Problem</div>
+  <div class="section-label fr" style="display:none">Le problème</div>
+
+  <h2 class="section-title en">Safety pins are the weakest part of your race kit.</h2>
+  <h2 class="section-title fr" style="display:none">Les épingles de sûreté sont le maillon faible de votre kit de course.</h2>
+
+  <p class="section-sub en">Every year, race directors hand out thousands of safety pins. They poke holes in expensive gear, frustrate participants at packet pickup, and carry zero branding value. There's a better way.</p>
+  <p class="section-sub fr" style="display:none">Chaque année, les organisateurs distribuent des milliers d'épingles. Elles percent les vêtements coûteux, frustrent les participants et n'offrent aucune valeur de marque. Il existe une meilleure solution.</p>
+
+  <div class="problem-grid">
+    <div class="problem-card">
+      <div class="problem-icon">👕</div>
+      <h3 class="en">Holes in gear</h3>
+      <h3 class="fr" style="display:none">Trous dans les vêtements</h3>
+      <p class="en">Participants pay $100+ for technical running shirts. Four holes per race, every race — it adds up fast.</p>
+      <p class="fr" style="display:none">Les coureurs paient 100 $ et plus pour des chandails techniques. Quatre trous par course — ça s'accumule vite.</p>
+    </div>
+    <div class="problem-card">
+      <div class="problem-icon">😤</div>
+      <h3 class="en">Packet pickup chaos</h3>
+      <h3 class="fr" style="display:none">Chaos à la remise des dossards</h3>
+      <p class="en">Fumbling with tiny pins under pressure, at dawn, before a race. Nobody loves it.</p>
+      <p class="fr" style="display:none">Manipuler de petites épingles sous pression, à l'aube, avant une course. Personne n'apprécie ça.</p>
+    </div>
+    <div class="problem-card">
+      <div class="problem-icon">📍</div>
+      <h3 class="en">Zero brand value</h3>
+      <h3 class="fr" style="display:none">Aucune valeur de marque</h3>
+      <p class="en">A generic safety pin is a missed opportunity. Your logo could be on every runner's chest instead.</p>
+      <p class="fr" style="display:none">Une épingle générique est une occasion manquée. Votre logo pourrait être sur la poitrine de chaque coureur.</p>
+    </div>
+    <div class="problem-card">
+      <div class="problem-icon">🗑️</div>
+      <h3 class="en">Single-use waste</h3>
+      <h3 class="fr" style="display:none">Déchets à usage unique</h3>
+      <p class="en">Pins get bent, lost, and thrown away. RunClips are durable and reusable — by the runner, forever.</p>
+      <p class="fr" style="display:none">Les épingles se tordent, se perdent et se jettent. Les RunClips sont durables et réutilisables — par le coureur, pour toujours.</p>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ─── HOW IT WORKS ─────────────────────────────────────── -->
+<section class="section-full reveal" id="how">
+  <div class="section-full-inner">
+    <div class="section-label en">How It Works</div>
+    <div class="section-label fr" style="display:none">Comment ça fonctionne</div>
+
+    <h2 class="section-title en">Simple as snap, lock, run.</h2>
+    <h2 class="section-title fr" style="display:none">Simple comme cliquer, verrouiller, courir.</h2>
+
+    <p class="section-sub en">Two pieces. No tools. No damage. Your logo on the front, holding strong from the start line to the finish — even after 100 miles.</p>
+    <p class="section-sub fr" style="display:none">Deux pièces. Sans outils. Sans dommages. Votre logo sur le devant, bien fixé de la ligne de départ à l'arrivée — même après 160 kilomètres.</p>
+
+    <div class="steps">
+      <div class="step">
+        <h3 class="en">Place the back piece</h3>
+        <h3 class="fr" style="display:none">Placez la pièce arrière</h3>
+        <p class="en">Slide the back component through the bib corner from behind your shirt. No puncture, no damage.</p>
+        <p class="fr" style="display:none">Glissez la pièce arrière à travers le coin du dossard par derrière votre chandail. Sans percer, sans abîmer.</p>
+      </div>
+      <div class="step">
+        <h3 class="en">Snap the front face</h3>
+        <h3 class="fr" style="display:none">Enclenchez la face avant</h3>
+        <p class="en">Press the branded front piece onto the back. It clicks and locks. Your logo is now on the runner's chest.</p>
+        <p class="fr" style="display:none">Appuyez la pièce avant brandée sur l'arrière. Elle clique et se verrouille. Votre logo est maintenant sur la poitrine du coureur.</p>
+      </div>
+      <div class="step">
+        <h3 class="en">Run — no matter how far</h3>
+        <h3 class="fr" style="display:none">Courez — peu importe la distance</h3>
+        <p class="en">Field tested at the Cruel Jewel 100 Mile ultramarathon. The bib was trashed. The clips were perfect.</p>
+        <p class="fr" style="display:none">Testé sur le terrain au Cruel Jewel 100 Miles. Le dossard était en lambeaux. Les clips étaient parfaits.</p>
+      </div>
+      <div class="step">
+        <h3 class="en">Runner keeps the clip</h3>
+        <h3 class="fr" style="display:none">Le coureur garde le clip</h3>
+        <p class="en">Unlike pins, runners take the clips home. Your brand lives on their gear drawer long after race day.</p>
+        <p class="fr" style="display:none">Contrairement aux épingles, les coureurs gardent les clips. Votre marque survit bien au-delà du jour de course.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ─── PROOF / TESTIMONIAL ─────────────────────────────── -->
+<section class="section reveal" id="proof">
+  <div class="section-label en">Field Proof</div>
+  <div class="section-label fr" style="display:none">Preuve sur le terrain</div>
+
+  <h2 class="section-title en">Still holding after 100 miles.</h2>
+  <h2 class="section-title fr" style="display:none">Encore en place après 100 milles.</h2>
+
+  <div class="proof-section">
+    <p class="proof-quote en">
+      "I used RunClips for the <em>Cruel Jewel 100 Mile ultramarathon</em>. The bib was completely wrecked by the finish line. The clips? Still perfectly in place. Easy to put on, comfortable the entire way — and zero issues across all 100 miles."
+    </p>
+    <p class="proof-quote fr" style="display:none">
+      "J'ai utilisé les RunClips pour le <em>Cruel Jewel 100 milles</em>. Le dossard était complètement détruit à la ligne d'arrivée. Les clips ? Toujours parfaitement en place. Faciles à mettre, confortables tout au long du parcours — aucun problème sur les 160 kilomètres."
+    </p>
+    <div class="proof-attribution">
+      <div class="proof-avatar">🏃‍♀️</div>
+      <div>
+        <div class="proof-name en">Sophie — 100-Mile Ultramarathon Finisher</div>
+        <div class="proof-name fr" style="display:none">Sophie — Finisseuse d'ultramarathon 100 milles</div>
+        <div class="proof-detail en">Cruel Jewel 100 · May 2026</div>
+        <div class="proof-detail fr" style="display:none">Cruel Jewel 100 · Mai 2026</div>
+      </div>
+      <div class="proof-tag en">100 Miles ✓</div>
+      <div class="proof-tag fr" style="display:none">160 km ✓</div>
+    </div>
+  </div>
+
+  <!-- B2B client callout -->
+  <div style="margin-top: 40px; display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+    <div style="background: var(--white-faint); border: 1px solid var(--rule); border-radius: var(--radius); padding: 28px 24px;">
+      <div style="font-size: 0.72rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gold); margin-bottom: 12px;">
+        <span class="en">B2B Partner</span>
+        <span class="fr" style="display:none">Partenaire B2B</span>
+      </div>
+      <div style="font-weight: 700; font-size: 1rem; margin-bottom: 6px;">Fondation Cancer du Sein du Québec</div>
+      <div style="font-size: 0.85rem; color: var(--white-dim); line-height: 1.6;" class="en">1,000 custom-branded packs. Their logo, their colours, on every runner's bib.</div>
+      <div style="font-size: 0.85rem; color: var(--white-dim); line-height: 1.6;" class="fr" style="display:none">1 000 paquets personnalisés. Leur logo, leurs couleurs, sur le dossard de chaque coureur.</div>
+    </div>
+    <div style="background: var(--white-faint); border: 1px solid var(--rule); border-radius: var(--radius); padding: 28px 24px;">
+      <div style="font-size: 0.72rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gold); margin-bottom: 12px;">
+        <span class="en">Race Expo</span>
+        <span class="fr" style="display:none">Expo Course</span>
+      </div>
+      <div style="font-weight: 700; font-size: 1rem; margin-bottom: 6px;">
+        <span class="en">Ottawa Race Weekend 2026</span>
+        <span class="fr" style="display:none">Fin de semaine de course d'Ottawa 2026</span>
+      </div>
+      <div style="font-size: 0.85rem; color: var(--white-dim); line-height: 1.6;" class="en">Sold directly to runners at Canada's biggest race weekend. The product speaks for itself.</div>
+      <div style="font-size: 0.85rem; color: var(--white-dim); line-height: 1.6;" class="fr" style="display:none">Vendu directement aux coureurs lors du plus grand week-end de course du Canada. Le produit se vend de lui-même.</div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ─── CUSTOMIZATION ────────────────────────────────────── -->
+<section class="section-full reveal" id="custom">
+  <div class="section-full-inner">
+    <div class="section-label en">Fully Custom</div>
+    <div class="section-label fr" style="display:none">100% Personnalisable</div>
+
+    <h2 class="section-title en">Your logo. Your brand. Your RunClips.</h2>
+    <h2 class="section-title fr" style="display:none">Votre logo. Votre marque. Vos RunClips.</h2>
+
+    <p class="section-sub en">Every order is made to your spec. The clip face is a canvas — your event branding, sponsor logo, or custom design, printed sharp and clean on every unit.</p>
+    <p class="section-sub fr" style="display:none">Chaque commande est fabriquée selon vos spécifications. La face de la pince est une toile — votre image d'événement, le logo de votre commanditaire ou votre design personnalisé, imprimé net et précis sur chaque unité.</p>
+
+    <div class="custom-grid">
+      <div class="custom-card">
+        <div class="custom-card-icon">🏷️</div>
+        <h3 class="en">Event Logo</h3>
+        <h3 class="fr" style="display:none">Logo d'événement</h3>
+        <p class="en">Your race identity on every bib at the start line.</p>
+        <p class="fr" style="display:none">L'identité de votre course sur chaque dossard à la ligne de départ.</p>
+      </div>
+      <div class="custom-card">
+        <div class="custom-card-icon">🤝</div>
+        <h3 class="en">Sponsor Branding</h3>
+        <h3 class="fr" style="display:none">Visibilité commanditaire</h3>
+        <p class="en">A new inventory item to offer sponsors — wearable, reusable exposure.</p>
+        <p class="fr" style="display:none">Un nouveau produit à offrir à vos commanditaires — visibilité portable et réutilisable.</p>
+      </div>
+      <div class="custom-card">
+        <div class="custom-card-icon">🎨</div>
+        <h3 class="en">Custom Design</h3>
+        <h3 class="fr" style="display:none">Design personnalisé</h3>
+        <p class="en">Slogans, illustrations, patterns — we'll help you design something runners will keep.</p>
+        <p class="fr" style="display:none">Slogans, illustrations, motifs — nous vous aidons à concevoir quelque chose que les coureurs garderont.</p>
+      </div>
+      <div class="custom-card">
+        <div class="custom-card-icon">📦</div>
+        <h3 class="en">Branded Packaging</h3>
+        <h3 class="fr" style="display:none">Emballage personnalisé</h3>
+        <p class="en">The card inside the pack is fully customizable too — your event, your look, complete.</p>
+        <p class="fr" style="display:none">La carte à l'intérieur du paquet est aussi entièrement personnalisable — votre événement, votre image, complète.</p>
+      </div>
+    </div>
+
+    <!-- Specs callout -->
+    <div style="background: var(--white-faint); border: 1px solid var(--rule); border-radius: var(--radius); padding: 28px 32px; display: flex; gap: 40px; flex-wrap: wrap; align-items: center;">
+      <div>
+        <div style="font-size: 0.72rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--cyan); margin-bottom: 8px;">
+          <span class="en">Order Details</span>
+          <span class="fr" style="display:none">Détails de commande</span>
+        </div>
+        <div style="font-size: 1.8rem; font-weight: 900; line-height: 1;">300<span style="font-size: 1rem;"> packs min.</span></div>
+      </div>
+      <div style="color: var(--white-dim); font-size: 0.88rem; line-height: 1.6; max-width: 420px;" class="en">
+        Each pack includes 4 RunClips and a custom-printed card with your branding. Design approval included before production. Fully customizable — your logo, your colours, your message.
+      </div>
+      <div style="color: var(--white-dim); font-size: 0.88rem; line-height: 1.6; max-width: 420px;" class="fr" style="display:none">
+        Chaque paquet comprend 4 RunClips et une carte imprimée personnalisée avec votre image de marque. Approbation du design incluse avant la production. Entièrement personnalisable — votre logo, vos couleurs, votre message.
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ─── QUOTE FORM ────────────────────────────────────────── -->
+<section class="section-full reveal" id="quote">
+  <div class="section-full-inner">
+    <div class="form-wrap">
+      <div class="form-info">
+        <div class="section-label en">Get a Quote</div>
+        <div class="section-label fr" style="display:none">Obtenir une soumission</div>
+
+        <h2 class="en">Ready to upgrade your race kit?<br><em>Let's talk.</em></h2>
+        <h2 class="fr" style="display:none">Prêt à améliorer votre kit de course ?<br><em>Parlons-en.</em></h2>
+
+        <p class="en">Fill out the form and we'll get back to you within 24 hours with a custom quote and a free design mockup for your event.</p>
+        <p class="fr" style="display:none">Remplissez le formulaire et nous vous répondrons dans les 24 heures avec une soumission personnalisée et une maquette de design gratuite pour votre événement.</p>
+
+        <div class="contact-links">
+          <a href="mailto:run@runmaps.ca" class="contact-link">
+            <span class="contact-link-icon">✉</span>
+            run@runmaps.ca
+          </a>
+          <a href="tel:8199239186" class="contact-link">
+            <span class="contact-link-icon">📞</span>
+            819.923.9186
+          </a>
+          <a href="https://runmaps.ca" class="contact-link" target="_blank">
+            <span class="contact-link-icon">🌐</span>
+            runmaps.ca
+          </a>
+        </div>
+
+        <div style="margin-top: 40px; padding: 20px; background: var(--gold-dim); border: 1px solid rgba(245,166,35,0.25); border-radius: var(--radius);">
+          <div style="font-size: 0.75rem; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gold); margin-bottom: 8px;" class="en">Free design mockup included</div>
+          <div style="font-size: 0.75rem; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gold); margin-bottom: 8px;" class="fr" style="display:none">Maquette de design gratuite incluse</div>
+          <div style="font-size: 0.85rem; color: var(--white-dim); line-height: 1.6;" class="en">Every quote includes a free visual mockup of your custom clip design. No commitment required.</div>
+          <div style="font-size: 0.85rem; color: var(--white-dim); line-height: 1.6;" class="fr" style="display:none">Chaque soumission comprend une maquette visuelle gratuite de votre design personnalisé. Sans engagement.</div>
+        </div>
+      </div>
+
+      <div class="form-fields">
+        <form id="quoteForm" onsubmit="handleSubmit(event)">
+          <div class="field-row">
+            <div class="field">
+              <label class="en">Your Name</label>
+              <label class="fr" style="display:none">Votre nom</label>
+              <input type="text" name="name" placeholder="Jonathan" required>
+            </div>
+            <div class="field">
+              <label class="en">Organization / Event</label>
+              <label class="fr" style="display:none">Organisation / Événement</label>
+              <input type="text" name="org" placeholder="Tamarack Ottawa Race Weekend" required>
+            </div>
+          </div>
+          <div class="field">
+            <label class="en">Email</label>
+            <label class="fr" style="display:none">Courriel</label>
+            <input type="email" name="email" placeholder="you@yourevent.com" required>
+          </div>
+          <div class="field-row">
+            <div class="field">
+              <label class="en">Race Date</label>
+              <label class="fr" style="display:none">Date de course</label>
+              <input type="date" name="date">
+            </div>
+            <div class="field">
+              <label class="en">Estimated Participants</label>
+              <label class="fr" style="display:none">Participants estimés</label>
+              <select name="qty">
+                <option value="" disabled selected class="en">Select range</option>
+                <option value="300-500">300 – 500</option>
+                <option value="500-1000">500 – 1,000</option>
+                <option value="1000-2000">1,000 – 2,000</option>
+                <option value="2000-5000">2,000 – 5,000</option>
+                <option value="5000+">5,000+</option>
+              </select>
+            </div>
+          </div>
+          <div class="field">
+            <label class="en">Tell us about your event</label>
+            <label class="fr" style="display:none">Parlez-nous de votre événement</label>
+            <textarea name="message" placeholder="Type of race, sponsorship needs, custom design ideas..."></textarea>
+          </div>
+          <button type="submit" class="form-submit">
+            <span class="en">Send My Quote Request →</span>
+            <span class="fr" style="display:none">Envoyer ma demande de soumission →</span>
+          </button>
+          <div class="form-success" id="formSuccess">
+            <span class="en">✓ Request sent! We'll be in touch within 24 hours.</span>
+            <span class="fr" style="display:none">✓ Demande envoyée ! Nous vous répondrons dans les 24 heures.</span>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── FOOTER ────────────────────────────────────────────── -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-brand">Run<span>Clips</span> <span style="font-weight:400;font-size:0.75rem;color:rgba(255,255,255,0.4);">by RunMaps</span></div>
+    <div class="footer-links">
+      <a href="https://runmaps.ca" target="_blank">RunMaps.ca</a>
+      <a href="mailto:run@runmaps.ca">run@runmaps.ca</a>
+      <a href="tel:8199239186">819.923.9186</a>
+    </div>
+    <div class="footer-copy">
+      <span class="en">© 2026 RunClips by RunMaps · Made in Quebec, Canada · runclips.ca</span>
+      <span class="fr" style="display:none">© 2026 RunClips par RunMaps · Fabriqué au Québec, Canada · runclips.ca</span>
+      <span class="fr" style="display:none">© 2026 RunClips par RunMaps · Fabriqué au Québec, Canada · runclips.ca</span>
+    </div>
+  </div>
+</footer>
+
+<!-- ─── SCRIPTS ───────────────────────────────────────────── -->
+<script>
+  // Language toggle
+  function setLang(lang) {
+    document.body.className = lang;
+    document.getElementById('btn-en').classList.toggle('active', lang === 'en');
+    document.getElementById('btn-fr').classList.toggle('active', lang === 'fr');
+
+    // Show/hide all .en and .fr elements
+    document.querySelectorAll('.en').forEach(el => {
+      el.style.display = (lang === 'en') ? '' : 'none';
+    });
+    document.querySelectorAll('.fr').forEach(el => {
+      el.style.display = (lang === 'fr') ? '' : 'none';
+    });
+  }
+
+  // Scroll reveal
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.classList.add('visible');
+        observer.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+
+  document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+  // Form submit (mailto fallback — replace with Formspree or Netlify later)
+  function handleSubmit(e) {
+    e.preventDefault();
+    const form = e.target;
+    const data = new FormData(form);
+    const name = data.get('name');
+    const org = data.get('org');
+    const email = data.get('email');
+    const qty = data.get('qty');
+    const message = data.get('message') || '';
+    const date = data.get('date') || 'TBD';
+
+    const subject = encodeURIComponent(`RunClips Quote Request — ${org}`);
+    const body = encodeURIComponent(
+      `Name: ${name}\nOrganization: ${org}\nEmail: ${email}\nRace Date: ${date}\nParticipants: ${qty}\n\nMessage:\n${message}`
+    );
+
+    window.location.href = `mailto:run@runmaps.ca?subject=${subject}&body=${body}`;
+
+    document.getElementById('formSuccess').style.display = 'block';
+    form.reset();
+  }
+
+  // Detect browser language preference
+  const userLang = navigator.language || navigator.userLanguage;
+  if (userLang && userLang.toLowerCase().startsWith('fr')) {
+    setLang('fr');
+  }
+</script>
+
+</body>
+</html>
